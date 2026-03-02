@@ -1,11 +1,13 @@
 import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy import units as u
-import matplotlib.pyplot as plt
+from astropy.units import Quantity
 
 
 @u.quantity_input
-def get_offsets_norotation(width: u.degree, height: u.degree, pb: u.degree) -> list:
+def get_offsets_norotation(
+    width: Quantity[u.degree], height: Quantity[u.degree], pb: Quantity[u.degree]
+) -> list:
     """
     Calculate the offsets for the pointings based on the width and height.
 
@@ -50,7 +52,10 @@ def get_offsets_norotation(width: u.degree, height: u.degree, pb: u.degree) -> l
 
 @u.quantity_input
 def get_offsets(
-    width: u.degree, height: u.degree, pb: u.degree, pa: u.degree = 0 * u.degree
+    width: Quantity[u.degree],
+    height: Quantity[u.degree],
+    pb: Quantity[u.degree],
+    pa: Quantity[u.degree] = 0 * u.degree,
 ) -> list:
     """
     Calculate the offsets for the pointings based on the width, height, and position angle.
@@ -74,11 +79,6 @@ def get_offsets(
     for ra_offset, dec_offset in offsets_norotation:
         ra_val = ra_offset.to_value(u.deg)
         dec_val = dec_offset.to_value(u.deg)
-        # Ra = Lon, Dec = Lat
-        # Rotate the axes
-        # c, s = np.cos(pa_angle), np.sin(pa_angle)
-        # Ra_pa = -s * Dec + c * Ra
-        # Dec_pa = c * Dec + s * Ra
         ra_rot = ra_val * cos_pa + dec_val * sin_pa
         dec_rot = -ra_val * sin_pa + dec_val * cos_pa
         rotated_offsets.append((ra_rot * u.deg, dec_rot * u.deg))
@@ -88,12 +88,12 @@ def get_offsets(
 
 @u.quantity_input
 def compute_pointings(
-    ra: u.degree,
-    dec: u.degree,
-    width: u.degree,
-    height: u.degree,
-    pa: u.degree,
-    pb: u.degree,
+    ra: Quantity[u.degree],
+    dec: Quantity[u.degree],
+    width: Quantity[u.degree],
+    height: Quantity[u.degree],
+    pb: Quantity[u.degree],
+    pa: Quantity[u.degree] = 0 * u.degree,
 ) -> list:
     """
     Compute the pointings for a given right ascension (RA), declination (Dec), and field of view (FOV).
@@ -113,24 +113,37 @@ def compute_pointings(
     ra_rad = np.radians(ra)
     dec_rad = np.radians(dec)
 
-    center = SkyCoord(ra=ra_rad, dec=dec_rad, frame="icrs", unit=u.deg)
-    # Calculate the number of pointings needed based on the FOV
-    # num_pointings = int(np.ceil(360 / width))
-
+    # first compute the offsets for the pointings based on the width, height, and primary beam size
     offset = get_offsets(width, height, pb, pa=pa)
 
-    # frame_center = center.skyoffset_frame(rotation=None)
-
+    # Create a SkyCoord object for the center of the field
+    center = SkyCoord(ra=ra_rad, dec=dec_rad, frame="icrs", unit=u.deg)
+    # and rotate the offsets to get the actual pointings in RA and Dec
+    # and store in a list of tuples
     pointings = []
     for offset_i in offset:
         coor = center.spherical_offsets_by(offset_i[0], offset_i[1])
         pointings.append(coor)
 
-    # for i in range(num_pointings):
-    #     # Calculate the new RA and Dec for each pointing
-    #     new_ra = (ra + i * width) % 360
-    #     new_dec = dec
-
-    #     pointings.append((new_ra, new_dec))
-
     return pointings
+
+
+def export_iram(pointings: list, filename: str = "iram_pointings.txt"):
+    """
+    Export the pointings to a text file in the format required by IRAM.
+
+    Parameters:
+    pointings (list): A list of tuples containing the pointings (dRA, dDec) for the given mosaic.
+    filename (str): The name of the output text file. Default is "iram_pointings.txt".
+    """
+    with open(filename, "w") as f:
+        f.write("#dx;dy\n")
+        for i, pointing in enumerate(pointings):
+            if i < len(pointings) - 1:
+                f.write(
+                    f"{pointing[0].to_value(u.arcsec):.2f};{pointing[1].to_value(u.arcsec):.2f}\n"
+                )
+            else:
+                f.write(
+                    f"{pointing[0].to_value(u.arcsec):.2f};{pointing[1].to_value(u.arcsec):.2f}"
+                )
