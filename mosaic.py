@@ -19,7 +19,7 @@ def get_offsets_norotation(
     Returns:
     list: A list of tuples containing the offsets (RA_offset, Dec_offset) for each pointing.
     """
-    separation = (pb).to_value(u.deg)
+    separation = (pb).to_value(u.deg) / 2.0
     if separation <= 0:
         raise ValueError("pb must be > 0")
 

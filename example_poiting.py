@@ -32,10 +32,11 @@ plt.ion()
 plt.close("all")
 # Example usage
 PB = pb_noema(115 * u.GHz)
+# pa = 0 * u.degree
 pa = 56 * u.degree
-box_height = 3.0 * u.arcmin
+box_height = 2.0 * u.arcmin
 # box_height = 2.2 * u.arcmin
-box_width = 5 * u.arcmin
+box_width = 3.5 * u.arcmin
 pointings = get_offsets(width=box_width, height=box_height, pb=PB, pa=pa)
 
 pointings2 = get_offsets(width=box_width, height=box_height, pb=PB, pa=0 * u.degree)
@@ -45,17 +46,27 @@ export_iram(pointings, filename="iram_pointings.txt")
 # example usage without plotting images
 fig = plt.figure(figsize=(8, 8))
 ax = fig.add_subplot(111)
-ax.set_xlabel("RA Offset (degrees)")
-ax.set_ylabel("Dec Offset (degrees)")
+ax.set_xlabel("RA Offset (arcsec)")
+ax.set_ylabel("Dec Offset (arcsec)")
 ax.invert_xaxis()
 
 for p in pointings:
     plot_circle(
-        ax, (p[0].to_value(u.deg), p[1].to_value(u.deg)), PB, color="blue", alpha=0.5
+        ax,
+        (p[0].to_value(u.arcsec), p[1].to_value(u.arcsec)),
+        radius=PB * 0.5,
+        axis_units=u.arcsec,
+        color="blue",
+        alpha=0.5,
     )
 for p in pointings2:
     plot_circle(
-        ax, (p[0].to_value(u.deg), p[1].to_value(u.deg)), PB, color="green", alpha=0.5
+        ax,
+        (p[0].to_value(u.arcsec), p[1].to_value(u.arcsec)),
+        radius=PB * 0.5,
+        axis_units=u.arcsec,
+        color="green",
+        alpha=0.5,
     )
 ax.set_aspect("equal")
 
@@ -102,7 +113,7 @@ plot_TdV(
 )
 
 for p in radec_points:
-    plot_circle_wcs(ax2, (p.ra, p.dec), PB, color="blue", alpha=0.5)
+    plot_circle_wcs(ax2, (p.ra, p.dec), radius=PB * 0.5, color="blue", alpha=0.5)
 
 ax2.text(
     0.70,
