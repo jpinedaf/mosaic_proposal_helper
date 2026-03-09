@@ -48,14 +48,18 @@ def plot_circle(ax, center, radius, axis_units=u.deg, **kwargs) -> None:
     return
 
 
-def plot_circle_wcs(ax, center, radius, **kwargs) -> None:
+def plot_circle_wcs(
+    ax, center, radius, edgecolor="white", lw=1.5, ls=":", **kwargs
+) -> None:
     c0 = SphericalCircle(
         (center[0], center[1]),
         radius,
-        edgecolor="white",
+        edgecolor=edgecolor,
         facecolor="none",
-        ls=":",
+        ls=ls,
         transform=ax.get_transform("fk5"),
+        lw=lw,
+        **kwargs,
     )
     ax.add_patch(c0)
     return

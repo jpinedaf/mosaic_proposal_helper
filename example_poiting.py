@@ -34,9 +34,9 @@ plt.close("all")
 PB = pb_noema(115 * u.GHz)
 # pa = 0 * u.degree
 pa = 56 * u.degree
-box_height = 2.0 * u.arcmin
+box_height = 1.2 * u.arcmin
 # box_height = 2.2 * u.arcmin
-box_width = 3.5 * u.arcmin
+box_width = 2.4 * u.arcmin
 pointings = get_offsets(width=box_width, height=box_height, pb=PB, pa=pa)
 
 pointings2 = get_offsets(width=box_width, height=box_height, pb=PB, pa=0 * u.degree)
