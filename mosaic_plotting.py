@@ -12,7 +12,6 @@ from astropy.visualization.wcsaxes import SphericalCircle
 from astropy.coordinates import SkyCoord
 from matplotlib import patheffects
 
-
 plt.rcParams.update(
     {
         "text.usetex": True,
@@ -39,23 +38,27 @@ def pb_noema(freq_obs: Quantity[u.GHz]) -> u.arcsec:
     return (64.1 * u.arcsec * 72.78382 * u.GHz / freq_obs).decompose()
 
 
-def plot_circle(ax, center, radius, **kwargs) -> None:
+def plot_circle(ax, center, radius, axis_units=u.deg, **kwargs) -> None:
     theta = np.linspace(0, 2 * np.pi, 100)
-    x = center[0] + radius.to_value(u.deg) * np.cos(theta)
-    y = center[1] + radius.to_value(u.deg) * np.sin(theta)
+    x = center[0] + radius.to_value(axis_units) * np.cos(theta)
+    y = center[1] + radius.to_value(axis_units) * np.sin(theta)
     ax.plot(x, y, **kwargs)
     ax.scatter(center[0], center[1], marker="+", color="red", s=20)
     return
 
 
-def plot_circle_wcs(ax, center, radius, **kwargs) -> None:
+def plot_circle_wcs(
+    ax, center, radius, edgecolor="white", lw=1.5, ls=":", **kwargs
+) -> None:
     c0 = SphericalCircle(
         (center[0], center[1]),
         radius,
-        edgecolor="white",
+        edgecolor=edgecolor,
         facecolor="none",
-        ls=":",
+        ls=ls,
         transform=ax.get_transform("fk5"),
+        lw=lw,
+        **kwargs,
     )
     ax.add_patch(c0)
     return

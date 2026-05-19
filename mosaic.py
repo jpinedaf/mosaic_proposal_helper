@@ -6,7 +6,9 @@ from astropy.units import Quantity
 
 @u.quantity_input
 def get_offsets_norotation(
-    width: Quantity[u.degree], height: Quantity[u.degree], pb: Quantity[u.degree]
+    width: Quantity[u.degree],
+    height: Quantity[u.degree],
+    pb: Quantity[u.degree],
 ) -> list:
     """
     Calculate the offsets for the pointings based on the width and height.
@@ -19,7 +21,7 @@ def get_offsets_norotation(
     Returns:
     list: A list of tuples containing the offsets (RA_offset, Dec_offset) for each pointing.
     """
-    separation = (pb).to_value(u.deg)
+    separation = (pb).to_value(u.deg) / 2.0
     if separation <= 0:
         raise ValueError("pb must be > 0")
 
@@ -31,23 +33,44 @@ def get_offsets_norotation(
     if y_step <= 0:
         raise ValueError("Invalid vertical spacing computed from pb")
 
-    max_row = int(np.ceil(half_height / y_step))
-    offsets = []
+    def _offsets_for_row_phase(row_offset: float) -> list:
+        max_row = int(np.ceil((half_height / y_step) + 0.5))
+        offsets = []
 
-    for row in range(-max_row, max_row + 1):
-        dec_offset = row * y_step
-        if abs(dec_offset) > half_height + 1e-12:
-            continue
+        for row in range(-max_row, max_row + 1):
+            dec_offset = (row + row_offset) * y_step
+            if abs(dec_offset) > half_height + 1e-12:
+                continue
 
-        row_shift = 0.0 if row % 2 == 0 else separation / 2
-        max_col = int(np.ceil((half_width + separation / 2) / separation))
+            row_shift = 0.0 if row % 2 == 0 else separation / 2
+            max_col = int(np.ceil((half_width + separation / 2) / separation))
 
-        for col in range(-max_col, max_col + 1):
-            ra_offset = col * separation + row_shift
-            if abs(ra_offset) <= half_width + 1e-12:
-                offsets.append((ra_offset * u.deg, dec_offset * u.deg))
+            for col in range(-max_col, max_col + 1):
+                ra_offset = col * separation + row_shift
+                if abs(ra_offset) <= half_width + 1e-12:
+                    offsets.append((ra_offset * u.deg, dec_offset * u.deg))
 
-    return offsets
+        return offsets
+
+    def _vertical_margin(offsets: list) -> float:
+        if not offsets:
+            return np.inf
+        max_abs_dec = max(abs(dec.to_value(u.deg)) for _, dec in offsets)
+        return half_height - max_abs_dec
+
+    # odd phase: rows at n*y_step (includes Dec=0)
+    offsets_odd = _offsets_for_row_phase(0.0)
+    # even phase: rows at (n+0.5)*y_step (Dec=0 between rows)
+    offsets_even = _offsets_for_row_phase(0.5)
+
+    margin_odd = _vertical_margin(offsets_odd)
+    margin_even = _vertical_margin(offsets_even)
+
+    # Choose the phase that places outer rows closer to the top/bottom limits.
+    # In ties, keep the odd phase to preserve the previous behavior.
+    if margin_even < margin_odd:
+        return offsets_even
+    return offsets_odd
 
 
 @u.quantity_input
