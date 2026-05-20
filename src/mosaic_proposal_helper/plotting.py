@@ -21,6 +21,18 @@ plt.rcParams.update(
 
 
 @u.quantity_input
+def pb_vla(freq_obs: u.GHz) -> u.arcsec:
+    """
+    Primary beam diameter for VLA at the observed frequency.
+        PB = 42.0 * 60 * (1.0*u.GHz) / freq_obs
+
+    :param freq_obs: is the observed frequency in GHz.
+    :return: The primary beam FWHM in arcsec
+    """
+    return (42.0 * 60 * u.arcsec * 1.0 * u.GHz / freq_obs).decompose()
+
+
+@u.quantity_input
 def pb_noema(freq_obs: Quantity[u.GHz]) -> u.arcsec:
     """
     Primary beam diameter for NOEMA at the observed frequency.
