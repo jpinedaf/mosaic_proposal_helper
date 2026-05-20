@@ -1,17 +1,21 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from astropy import units as u
-from astropy.units import Quantity
-import astropy.io.fits as fits
-import numpy as np
-import matplotlib.pyplot as plt
+from pathlib import Path
 
-from astropy.wcs import WCS
+import astropy.io.fits as fits
+import matplotlib.pyplot as plt
+from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
 from matplotlib import patheffects
 
-from mosaic import get_offsets, compute_pointings, export_iram
-from mosaic_plotting import plot_TdV, plot_circle, plot_circle_wcs, pb_noema
+from mosaic_proposal_helper import (
+    compute_pointings,
+    export_iram,
+    get_offsets,
+    pb_noema,
+    plot_TdV,
+    plot_circle,
+    plot_circle_wcs,
+)
 
 plt.rcParams.update(
     {
@@ -30,6 +34,10 @@ path_effects = [patheffects.withStroke(linewidth=3, foreground="white")]
 
 plt.ion()
 plt.close("all")
+
+base_dir = Path(__file__).resolve().parent
+data_dir = base_dir / "data"
+
 # Example usage
 PB = pb_noema(115 * u.GHz)
 # pa = 0 * u.degree
@@ -41,7 +49,7 @@ pointings = get_offsets(width=box_width, height=box_height, pb=PB, pa=pa)
 
 pointings2 = get_offsets(width=box_width, height=box_height, pb=PB, pa=0 * u.degree)
 
-export_iram(pointings, filename="iram_pointings.txt")
+export_iram(pointings, filename=str(data_dir / "iram_pointings.txt"))
 
 # example usage without plotting images
 fig = plt.figure(figsize=(8, 8))
@@ -76,7 +84,7 @@ color_map = plt.get_cmap(cmap_mom0_default).copy()
 color_map.set_bad(color=color_nan)
 vmin = -0.2
 vmax = 6.0
-TdV_11 = fits.open("B1main_NH3_11_TdV.fits")[0]
+TdV_11 = fits.open(data_dir / "B1main_NH3_11_TdV.fits")[0]
 wcs_TdV_11 = WCS(TdV_11.header)
 
 box_center = SkyCoord(

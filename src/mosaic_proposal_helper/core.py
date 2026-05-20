@@ -132,17 +132,12 @@ def compute_pointings(
     Returns:
     list: A list of tuples containing the pointings (RA, Dec) for the given FOV.
     """
-    # Convert RA and Dec from degrees to radians
     ra_rad = np.radians(ra)
     dec_rad = np.radians(dec)
 
-    # first compute the offsets for the pointings based on the width, height, and primary beam size
     offset = get_offsets(width, height, pb, pa=pa)
 
-    # Create a SkyCoord object for the center of the field
     center = SkyCoord(ra=ra_rad, dec=dec_rad, frame="icrs", unit=u.deg)
-    # and rotate the offsets to get the actual pointings in RA and Dec
-    # and store in a list of tuples
     pointings = []
     for offset_i in offset:
         coor = center.spherical_offsets_by(offset_i[0], offset_i[1])
