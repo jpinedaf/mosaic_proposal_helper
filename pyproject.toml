@@ -8,12 +8,134 @@ version = "0.1"
 description = "Helpers to generate and visualize mosaic pointings for interferometers"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { file = "LICENSE" }
+license = { text = "MIT License" }
 authors = [{ name = "Jaime Pineda" }]
-dependencies = ["numpy", "astropy", "matplotlib"]
+dependencies = ["numpy", "astropy", "matplotlib", "ruff>=0.4.6"]
+
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[tool.setuptools_scm]
+version_file = "src/mosaic_proposal_helper/_version.py"
 
 [tool.setuptools]
+include-package-data = true
 package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+namespaces = false
+
+[tool.coverage.run]
+branch = true
+source = ["mosaic_proposal_helper"]
+
+
+[tool.pytest.ini_options]
+pythonpath = "src/"
+addopts = ["--ignore=src/mosaic_proposal_helper/_version.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug",
+    "if __name__ == .__main__.:",
+]
+ignore_errors = true
+
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "backup",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+] # Exclude a variety of commonly ignored directories.
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.13
+target-version = "py313"
+
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F"]
+ignore = ["F401"]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
