@@ -41,7 +41,13 @@ def plot_circle(ax, center, radius, axis_units=u.deg, **kwargs) -> None:
 
 
 def plot_circle_wcs(
-    ax, center, radius, edgecolor="white", lw=1.5, ls=":", **kwargs
+    ax,
+    center,
+    radius,
+    edgecolor="white",
+    ls=":",
+    lw=1,
+    **kwargs,
 ) -> None:
     c0 = SphericalCircle(
         (center[0], center[1]),
@@ -49,11 +55,12 @@ def plot_circle_wcs(
         edgecolor=edgecolor,
         facecolor="none",
         ls=ls,
-        transform=ax.get_transform("fk5"),
         lw=lw,
+        transform=ax.get_transform("fk5"),
         **kwargs,
     )
     ax.add_patch(c0)
+    return
 
 
 def plot_TdV(
@@ -105,3 +112,4 @@ def plot_TdV(
     DEC.set_minor_frequency(5)
     RA.set_minor_frequency(5)
     _ = im
+    return

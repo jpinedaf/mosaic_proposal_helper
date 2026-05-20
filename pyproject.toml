@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mosaic_proposal_helper"
-version = "0.1"
 description = "Helpers to generate and visualize mosaic pointings for interferometers"
 readme = "README.md"
 requires-python = ">=3.10"
