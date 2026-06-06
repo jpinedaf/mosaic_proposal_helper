@@ -44,6 +44,39 @@ def pb_noema(freq_obs: Quantity[u.GHz]) -> u.arcsec:
     return (64.1 * u.arcsec * 72.78382 * u.GHz / freq_obs).decompose()
 
 
+@u.quantity_input
+def pb_sma(freq_obs: Quantity[u.GHz]) -> u.arcsec:
+    """
+    Primary beam diameter for SMA at the observed frequency. Obtained from
+    https://lweb.cfa.harvard.edu/sma/miriad/manuals/SMAuguide/smauserhtml/node130.html
+        PB = 50.4 * (219.08899*u.GHz) / freq_obs
+
+    :param freq_obs: is the observed frequency in GHz.
+    :return: The primary beam FWHM in arcsec
+    """
+    return (50.4 * u.arcsec * 219.08899 * u.GHz / freq_obs).decompose()
+
+
+def pb_interferometer(freq_obs: Quantity[u.GHz], telescope: str) -> u.arcsec:
+    """
+    Primary beam diameter for interferometers at the observed frequency.
+
+    :param freq_obs: is the observed frequency in GHz.
+    :param telescope: The name of the interferometer. Supported values are "vla", "noema", and "sma".
+    :return: The primary beam FWHM in arcsec
+    """
+    if telescope.lower() == "vla":
+        return pb_vla(freq_obs)
+    elif telescope.lower() == "noema":
+        return pb_noema(freq_obs)
+    elif telescope.lower() == "sma":
+        return pb_sma(freq_obs)
+    else:
+        raise ValueError(
+            f"Unsupported telescope: {telescope}. Supported values are 'vla', 'noema', and 'sma'."
+        )
+
+
 def plot_circle(ax, center, radius, axis_units=u.deg, **kwargs) -> None:
     theta = np.linspace(0, 2 * np.pi, 100)
     x = center[0] + radius.to_value(axis_units) * np.cos(theta)
