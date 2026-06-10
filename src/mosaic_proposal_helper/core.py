@@ -184,13 +184,8 @@ def export_nrao(
         # sourceName;groupNames;coordSystem;epoch;longitude;latitude;refFrame;convention;velocity;calibrator;
         #
         for i, pointing in enumerate(pointings):
-            # if i < len(pointings) - 1:
-            ra_c = pointing[0].ra.to_string(sep=":", unit=u.hourangle, precision=3)
-            dec_c = pointing[0].dec.to_string(sep=":", precision=3)
+            ra_c = pointing.ra.to_string(sep=":", unit=u.hourangle, precision=3)
+            dec_c = pointing.dec.to_string(sep=":", precision=3)
             f.write(
                 f"{source}_{i}; {source} Pointings; Equatorial; J2000; {ra_c}; {dec_c}; Lsr Kinematic; Radio; {vlsr};  ;\n"
             )
-        # else:
-        #     f.write(
-        #         f"{pointing[0].to_value(u.arcsec):.2f};{pointing[1].to_value(u.arcsec):.2f}"
-        #     )
