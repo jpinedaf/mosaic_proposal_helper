@@ -185,8 +185,8 @@ def export_nrao(
         #
         for i, pointing in enumerate(pointings):
             # if i < len(pointings) - 1:
-            ra_c = pointings_cut[0].ra.to_string(sep=":", unit=u.hourangle, precision=3)
-            dec_c = pointings_cut[0].dec.to_string(sep=":", precision=3)
+            ra_c = pointing[0].ra.to_string(sep=":", unit=u.hourangle, precision=3)
+            dec_c = pointing[0].dec.to_string(sep=":", precision=3)
             f.write(
                 f"{source}_{i}; {source} Pointings; Equatorial; J2000; {ra_c}; {dec_c}; Lsr Kinematic; Radio; {vlsr};  ;\n"
             )
