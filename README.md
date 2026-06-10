@@ -1,4 +1,8 @@
 # mosaic_proposal_helper
+![PyPI - License](https://img.shields.io/pypi/l/mosaic_proposal_helper?color=green)
+![PyPI - Version](https://img.shields.io/pypi/v/mosaic_proposal_helper)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fjpinedaf%2Fmosaic_proposal_helper%2Fmaster%2Fpyproject.toml)
+
 
 Helpers to generate and visualize mosaic pointings for interferometers.
 
@@ -9,6 +13,11 @@ This repository now follows a src-layout package structure:
 - `examples/data/`: data and outputs used by examples
 
 ## Installation
+
+Installation using pip:
+```python
+pip install mosaic_proposal_helper
+```
 
 From the repository root:
 
