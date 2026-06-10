@@ -29,7 +29,7 @@ test = ["pytest>=8"]
 
 [tool.setuptools_scm]
 version_file = "src/mosaic_proposal_helper/_version.py"
-fallback_version = "0.0.0"
+fallback_version = "0.0"
 
 [tool.setuptools]
 include-package-data = true
