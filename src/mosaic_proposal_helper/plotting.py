@@ -87,7 +87,7 @@ def plot_circle(
     ax: Axes,
     center: tuple[float, float],
     radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
-    axis_units: Quantity[u.arcsec] = u.arcsec,  # type: ignore[reportUnknownMemberType]
+    axis_units: Quantity[u.arcsec] = u.deg,  # type: ignore[reportUnknownMemberType]
     **kwargs: Any,
 ) -> None:
     theta = np.linspace(0, 2 * np.pi, 100)
