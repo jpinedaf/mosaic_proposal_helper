@@ -2,7 +2,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/mosaic_proposal_helper?color=green)
 ![PyPI - Version](https://img.shields.io/pypi/v/mosaic_proposal_helper)
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fjpinedaf%2Fmosaic_proposal_helper%2Fmaster%2Fpyproject.toml)
-
+[![codecov](https://codecov.io/gh/jpinedaf/mosaic_proposal_helper/graph/badge.svg?token=vFipFqFgIs)](https://codecov.io/gh/jpinedaf/mosaic_proposal_helper)
 
 Helpers to generate and visualize mosaic pointings for interferometers.
 

@@ -1,16 +1,17 @@
 [build-system]
-requires = ["setuptools >= 64", "setuptools-scm >= 8"]
+requires = ["setuptools >= 68", "setuptools-scm >= 8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "mosaic_proposal_helper"
 description = "Helpers to generate and visualize mosaic pointings for interferometers"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT License" }
 authors = [{ name = "Jaime Pineda" }]
 dependencies = ["numpy", "astropy", "matplotlib", "ruff>=0.4.6"]
 dynamic = ["version"]
+maintainers = [{ name = "Jaime E. Pineda", email = "jpineda@mpe.mpg.de" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -18,7 +19,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -29,7 +29,8 @@ test = ["pytest>=8"]
 
 [tool.setuptools_scm]
 version_file = "src/mosaic_proposal_helper/_version.py"
-fallback_version = "0.0"
+fallback_version = "0.3"
+local_scheme = "no-local-version"
 
 [tool.setuptools]
 include-package-data = true
@@ -42,11 +43,12 @@ namespaces = false
 [tool.coverage.run]
 branch = true
 source = ["mosaic_proposal_helper"]
+omit = ["*/mosaic_proposal_helper/test/*"]
 
 
 [tool.pytest.ini_options]
 pythonpath = "src/"
-addopts = ["--ignore=src/mosaic_proposal_helper/_version.py"]
+addopts = ["--ignore=src/mosaic_proposal_helper/_version.py", "--cov-branch"]
 
 [tool.coverage.report]
 exclude_lines = [

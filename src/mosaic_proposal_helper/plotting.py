@@ -1,10 +1,15 @@
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
+from astropy.io import fits
 from astropy.units import Quantity
-
-from astropy.visualization.wcsaxes import add_beam, add_scalebar
-from astropy.visualization.wcsaxes import SphericalCircle
+from astropy.visualization.wcsaxes import SphericalCircle, add_beam, add_scalebar
+from astropy.wcs import WCS
+from matplotlib.axes import Axes
+from matplotlib.colors import Colormap
+from matplotlib.markers import MarkerStyle
 
 plt.rcParams.update(
     {
@@ -21,7 +26,7 @@ plt.rcParams.update(
 
 
 @u.quantity_input
-def pb_vla(freq_obs: u.GHz) -> u.arcsec:
+def pb_vla(freq_obs: Quantity[u.GHz]) -> Quantity[u.arcsec]:
     """
     Primary beam diameter for VLA at the observed frequency.
         PB = 42.0 * 60 * (1.0*u.GHz) / freq_obs
@@ -33,7 +38,7 @@ def pb_vla(freq_obs: u.GHz) -> u.arcsec:
 
 
 @u.quantity_input
-def pb_noema(freq_obs: Quantity[u.GHz]) -> u.arcsec:
+def pb_noema(freq_obs: Quantity[u.GHz]) -> Quantity[u.arcsec]:
     """
     Primary beam diameter for NOEMA at the observed frequency.
         PB = 64.1 * (72.78382*u.GHz) / freq_obs
@@ -45,7 +50,7 @@ def pb_noema(freq_obs: Quantity[u.GHz]) -> u.arcsec:
 
 
 @u.quantity_input
-def pb_sma(freq_obs: Quantity[u.GHz]) -> u.arcsec:
+def pb_sma(freq_obs: Quantity[u.GHz]) -> Quantity[u.arcsec]:
     """
     Primary beam diameter for SMA at the observed frequency. Obtained from
     https://lweb.cfa.harvard.edu/sma/miriad/manuals/SMAuguide/smauserhtml/node130.html
@@ -57,7 +62,8 @@ def pb_sma(freq_obs: Quantity[u.GHz]) -> u.arcsec:
     return (50.4 * u.arcsec * 219.08899 * u.GHz / freq_obs).decompose()
 
 
-def pb_interferometer(freq_obs: Quantity[u.GHz], telescope: str) -> u.arcsec:
+@u.quantity_input
+def pb_interferometer(freq_obs: Quantity[u.GHz], telescope: str) -> Quantity[u.arcsec]:
     """
     Primary beam diameter for interferometers at the observed frequency.
 
@@ -77,22 +83,35 @@ def pb_interferometer(freq_obs: Quantity[u.GHz], telescope: str) -> u.arcsec:
         )
 
 
-def plot_circle(ax, center, radius, axis_units=u.deg, **kwargs) -> None:
+def plot_circle(
+    ax: Axes,
+    center: tuple[float, float],
+    radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
+    axis_units: Quantity[u.arcsec] = u.deg,  # type: ignore[reportUnknownMemberType]
+    **kwargs: Any,
+) -> None:
     theta = np.linspace(0, 2 * np.pi, 100)
     x = center[0] + radius.to_value(axis_units) * np.cos(theta)
     y = center[1] + radius.to_value(axis_units) * np.sin(theta)
     ax.plot(x, y, **kwargs)
-    ax.scatter(center[0], center[1], marker="+", color="red", s=20)
+    ax.scatter(
+        center[0],
+        center[1],
+        marker=MarkerStyle("+"),
+        facecolor="red",
+        s=20,
+        **kwargs,
+    )
 
 
 def plot_circle_wcs(
-    ax,
-    center,
-    radius,
-    edgecolor="white",
-    ls=":",
-    lw=1,
-    **kwargs,
+    ax: Axes,
+    center: tuple[Quantity[u.deg], Quantity[u.deg]],  # type: ignore[reportUnknownMemberType]
+    radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
+    edgecolor: str = "white",
+    ls: str = ":",
+    lw: float = 1,
+    **kwargs: Any,
 ) -> None:
     c0 = SphericalCircle(
         (center[0], center[1]),
@@ -105,35 +124,37 @@ def plot_circle_wcs(
         **kwargs,
     )
     ax.add_patch(c0)
-    return
 
 
 def plot_TdV(
-    TdV,
-    ax,
-    cmap,
-    wcs,
+    TdV: fits.PrimaryHDU,
+    ax: Axes,
+    cmap: Colormap | str,
+    wcs: WCS,
     vmin: float | None = None,
     vmax: float | None = None,
-    distance: Quantity[u.pc] = 140 * u.pc,
+    distance: Quantity[u.pc] = 140 * u.pc,  # type: ignore[reportUnknownMemberType]
     label_col: str = "white",
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
 ) -> None:
+    base_cmap = plt.get_cmap(cmap) if isinstance(cmap, str) else cmap
     im = ax.imshow(
         TdV.data,
         origin="lower",
         interpolation="None",
-        cmap=cmap,
+        cmap=base_cmap,
         alpha=1.0,
         transform=ax.get_transform(wcs),
         vmin=vmin,
         vmax=vmax,
     )
-    ax.set_xlim(110, 620)
-    ax.set_ylim(60, 500)
+    if xlim is not None:
+        ax.set_xlim(xlim)
+    if ylim is not None:
+        ax.set_ylim(ylim)
     length = (5e3 * u.au / distance).to(u.deg, u.dimensionless_angles())
-    add_scalebar(
-        ax, length, label=r"5\\,000 au", color=label_col, corner="bottom right"
-    )
+    add_scalebar(ax, length, label=r"5000 au", color=label_col, corner="bottom right")
     add_beam(
         ax,
         header=TdV.header,
@@ -144,10 +165,10 @@ def plot_TdV(
     )
     RA = ax.coords[0]
     DEC = ax.coords[1]
-    RA.set_axislabel(r"$\\alpha$ (J2000)", minpad=0.7)
+    RA.set_axislabel(r"$\alpha$ (J2000)", minpad=0.7)
     DEC.set_major_formatter("dd:mm")
     RA.set_major_formatter("hh:mm:ss")
-    DEC.set_axislabel(r"$\\delta$ (J2000)", minpad=0.8)
+    DEC.set_axislabel(r"$\delta$ (J2000)", minpad=0.8)
     DEC.set_ticklabel(rotation=90.0, color="black", exclude_overlapping=True)
     RA.set_ticklabel(color="black", exclude_overlapping=True)
     DEC.set_ticks(spacing=120 * u.arcsec, color="black")
@@ -157,4 +178,3 @@ def plot_TdV(
     DEC.set_minor_frequency(5)
     RA.set_minor_frequency(5)
     _ = im
-    return
