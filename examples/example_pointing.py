@@ -11,10 +11,10 @@ from mosaic_proposal_helper import (
     compute_pointings,
     export_iram,
     get_offsets,
-    pb_noema,
-    plot_TdV,
+    pb_interferometer,
     plot_circle,
     plot_circle_wcs,
+    plot_TdV,
 )
 
 plt.rcParams.update(
@@ -39,7 +39,7 @@ base_dir = Path(__file__).resolve().parent
 data_dir = base_dir / "data"
 
 # Example usage
-PB = pb_noema(115 * u.GHz)
+PB = pb_interferometer(115 * u.GHz, telescope="noema")  # primary beam size in arcsec
 # pa = 0 * u.degree
 pa = 56 * u.degree
 box_height = 1.2 * u.arcmin
