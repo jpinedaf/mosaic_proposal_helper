@@ -116,6 +116,8 @@ plot_TdV(
     vmax=vmax,
     distance=distance,
     label_col=label_col,
+    xlim=(110, 620),
+    ylim=(60, 500)
 )
 
 for p in radec_points:

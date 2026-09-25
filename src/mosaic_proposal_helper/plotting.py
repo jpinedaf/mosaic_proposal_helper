@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
+from astropy.io import fits
 from astropy.units import Quantity
 from astropy.visualization.wcsaxes import SphericalCircle, add_beam, add_scalebar
 from astropy.wcs import WCS
@@ -91,7 +92,14 @@ def plot_circle(
     x = center[0] + radius.to_value(axis_units) * np.cos(theta)
     y = center[1] + radius.to_value(axis_units) * np.sin(theta)
     ax.plot(x, y, **kwargs)
-    ax.scatter(center[0], center[1], marker=MarkerStyle("+"), color="red", s=20)
+    ax.scatter(
+        center[0],
+        center[1],
+        marker=MarkerStyle("+"),
+        facecolor="red",
+        s=20,
+        **kwargs,
+    )
 
 
 def plot_circle_wcs(
@@ -118,7 +126,7 @@ def plot_circle_wcs(
 
 
 def plot_TdV(
-    TdV: Quantity[u.K * u.km / u.s],
+    TdV: fits.PrimaryHDU,
     ax: Axes,
     cmap: Colormap | str,
     wcs: WCS,
@@ -126,6 +134,8 @@ def plot_TdV(
     vmax: float | None = None,
     distance: Quantity[u.pc] = 140 * u.pc,  # type: ignore[reportUnknownMemberType]
     label_col: str = "white",
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
 ) -> None:
     base_cmap = plt.get_cmap(cmap) if isinstance(cmap, str) else cmap
     im = ax.imshow(
@@ -138,12 +148,12 @@ def plot_TdV(
         vmin=vmin,
         vmax=vmax,
     )
-    ax.set_xlim(110, 620)
-    ax.set_ylim(60, 500)
+    if xlim is not None:
+        ax.set_xlim(xlim)
+    if ylim is not None:
+        ax.set_ylim(ylim)
     length = (5e3 * u.au / distance).to(u.deg, u.dimensionless_angles())
-    add_scalebar(
-        ax, length, label=r"5\\,000 au", color=label_col, corner="bottom right"
-    )
+    add_scalebar(ax, length, label=r"5000 au", color=label_col, corner="bottom right")
     add_beam(
         ax,
         header=TdV.header,
