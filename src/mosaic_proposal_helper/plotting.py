@@ -154,10 +154,10 @@ def plot_TdV(
     )
     RA = ax.coords[0]
     DEC = ax.coords[1]
-    RA.set_axislabel(r"$\\alpha$ (J2000)", minpad=0.7)
+    RA.set_axislabel(r"$\alpha$ (J2000)", minpad=0.7)
     DEC.set_major_formatter("dd:mm")
     RA.set_major_formatter("hh:mm:ss")
-    DEC.set_axislabel(r"$\\delta$ (J2000)", minpad=0.8)
+    DEC.set_axislabel(r"$\delta$ (J2000)", minpad=0.8)
     DEC.set_ticklabel(rotation=90.0, color="black", exclude_overlapping=True)
     RA.set_ticklabel(color="black", exclude_overlapping=True)
     DEC.set_ticks(spacing=120 * u.arcsec, color="black")
