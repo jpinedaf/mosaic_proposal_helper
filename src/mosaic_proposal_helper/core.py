@@ -1,6 +1,8 @@
+from typing import List, Tuple
+
 import numpy as np
-from astropy.coordinates import SkyCoord
 from astropy import units as u
+from astropy.coordinates import SkyCoord
 from astropy.units import Quantity
 
 
@@ -9,7 +11,7 @@ def get_offsets_norotation(
     width: Quantity[u.degree],
     height: Quantity[u.degree],
     pb: Quantity[u.degree],
-) -> list:
+) -> List[Tuple[Quantity[u.deg], Quantity[u.deg]]]:
     """
     Calculate the offsets for the pointings based on the width and height.
 
@@ -21,19 +23,21 @@ def get_offsets_norotation(
     Returns:
     list: A list of tuples containing the offsets (RA_offset, Dec_offset) for each pointing.
     """
-    separation = (pb).to_value(u.deg) / 2.0
+    separation: float = (pb).to_value(u.deg) / 2.0  # type: ignore[reportUnknownMemberType]
     if separation <= 0:
         raise ValueError("pb must be > 0")
 
-    half_width = (width / 2).to_value(u.deg)
-    half_height = (height / 2).to_value(u.deg)
+    half_width: float = (width / 2).to_value(u.deg)  # type: ignore[reportUnknownMemberType]
+    half_height: float = (height / 2).to_value(u.deg)  # type: ignore[reportUnknownMemberType]
 
     y_step = separation * np.sqrt(3) / 2
 
     if y_step <= 0:
         raise ValueError("Invalid vertical spacing computed from pb")
 
-    def _offsets_for_row_phase(row_offset: float) -> list:
+    def _offsets_for_row_phase(
+        row_offset: float,
+    ) -> List[Tuple[Quantity[u.deg], Quantity[u.deg]]]:
         max_row = int(np.ceil((half_height / y_step) + 0.5))
         offsets = []
 
@@ -52,7 +56,9 @@ def get_offsets_norotation(
 
         return offsets
 
-    def _vertical_margin(offsets: list) -> float:
+    def _vertical_margin(
+        offsets: List[Tuple[Quantity[u.deg], Quantity[u.deg]]],
+    ) -> float:
         if not offsets:
             return np.inf
         max_abs_dec = max(abs(dec.to_value(u.deg)) for _, dec in offsets)
@@ -79,7 +85,7 @@ def get_offsets(
     height: Quantity[u.degree],
     pb: Quantity[u.degree],
     pa: Quantity[u.degree] = 0 * u.degree,
-) -> list:
+) -> List[Tuple[Quantity[u.deg], Quantity[u.deg]]]:
     """
     Calculate the offsets for the pointings based on the width, height, and position angle.
 
@@ -117,7 +123,7 @@ def compute_pointings(
     height: Quantity[u.degree],
     pb: Quantity[u.degree],
     pa: Quantity[u.degree] = 0 * u.degree,
-) -> list:
+) -> List[Tuple[Quantity[u.deg], Quantity[u.deg]]]:
     """
     Compute the pointings for a given right ascension (RA), declination (Dec), and field of view (FOV).
 
@@ -146,7 +152,10 @@ def compute_pointings(
     return pointings
 
 
-def export_iram(pointings: list, filename: str = "iram_pointings.txt"):
+def export_iram(
+    pointings: List[Tuple[Quantity[u.deg], Quantity[u.deg]]],
+    filename: str = "iram_pointings.txt",
+):
     """
     Export the pointings to a text file in the format required by IRAM.
 
@@ -168,7 +177,10 @@ def export_iram(pointings: list, filename: str = "iram_pointings.txt"):
 
 
 def export_nrao(
-    pointings: list, source: str, vlsr: float, filename: str = "nrao_pointings.pst"
+    pointings: List[Tuple[Quantity[u.deg], Quantity[u.deg]]],
+    source: str,
+    vlsr: float,
+    filename: str = "nrao_pointings.pst",
 ):
     """
     Export the pointings to a text file in the format required by NRAO PST system.
