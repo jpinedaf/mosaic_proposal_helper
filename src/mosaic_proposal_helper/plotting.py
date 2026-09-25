@@ -1,3 +1,5 @@
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
@@ -86,7 +88,7 @@ def plot_circle(
     center: tuple[float, float],
     radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
     axis_units: Quantity[u.arcsec] = u.arcsec,  # type: ignore[reportUnknownMemberType]
-    **kwargs,
+    **kwargs: Any,
 ) -> None:
     theta = np.linspace(0, 2 * np.pi, 100)
     x = center[0] + radius.to_value(axis_units) * np.cos(theta)
@@ -109,7 +111,7 @@ def plot_circle_wcs(
     edgecolor: str = "white",
     ls: str = ":",
     lw: float = 1,
-    **kwargs,
+    **kwargs: Any,
 ) -> None:
     c0 = SphericalCircle(
         (center[0], center[1]),

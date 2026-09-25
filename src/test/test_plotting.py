@@ -46,26 +46,20 @@ def test_pb_interferometer_no_telescope():
 
 
 def _plot_image_helper(
-    tmp_path: Path,
     vmin: float | None = None,
     vmax: float | None = None,
-    distance: Quantity[u.pc] = 140 * u.pc,  # type: ignore[reportUnknownMemberType]
-    label_col="white",
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
+    distance: Quantity[u.pc] = 100 * u.pc,  # type: ignore[reportUnknownMemberType]
 ):
     """Helper function for continuum plotting tests."""
-    # dir = tmp_path
-    # dir.mkdir(exist_ok=True)
-    # file_name = "sample_image.fits"
-    # file_link = os.path.join(os.fspath(dir), file_name)
     hdu = make_sample_image()
     rms = 0.1
     seed = 122807528840384100672342137672332424406
     rng = np.random.default_rng(seed)
     data = hdu.data + rng.standard_normal(hdu.data.shape) * rms
     hdu.data = data
-    # hdu.writeto(file_link, overwrite=True)
 
-    distance = 100 * u.pc
     wcs = WCS(hdu.header)
     cmap = "Blues"
     fig = plt.figure(figsize=(5, 5))
@@ -76,7 +70,8 @@ def _plot_image_helper(
         "3:00:00.0", "33:00:00.00", frame="icrs", unit=(u.hourangle, u.deg)
     )
     PB = pb_interferometer(
-        115 * u.GHz, telescope="noema"
+        115 * u.GHz,  # type: ignore
+        telescope="noema",
     )  # primary beam size in arcsec
     pa = 56 * u.degree
     box_height = 1.2 * u.arcmin
@@ -99,10 +94,12 @@ def _plot_image_helper(
         vmax=vmax,
         distance=distance,
         label_col="black",
+        xlim=xlim,
+        ylim=ylim,
     )
     for p in radec_points:
         plot_circle_wcs(ax, (p.ra, p.dec), radius=PB * 0.5, edgecolor="blue", alpha=0.5)
-    fig.tight_layout()
+    plt.tight_layout()
 
 
 @image_comparison(
@@ -110,7 +107,30 @@ def _plot_image_helper(
     remove_text=True,
     extensions=["png"],
     style="mpl20",
-    tol=10,
+    tol=1,
 )
-def test_plot_TdV(tmp_path: Path) -> None:
-    _plot_image_helper(tmp_path, vmin=-0.3, vmax=1.3)
+def test_plot_TdV() -> None:
+    _plot_image_helper(
+        vmin=-0.3,
+        vmax=1.3,
+        xlim=None,
+        ylim=None,
+        distance=100 * u.pc,  # type: ignore
+    )
+
+
+@image_comparison(
+    baseline_images=["example_plot_TdV_NoLimits"],
+    remove_text=True,
+    extensions=["png"],
+    style="mpl20",
+    tol=1,
+)
+def test_plot_TdV_WithLimits() -> None:
+    _plot_image_helper(
+        vmin=-0.3,
+        vmax=1.3,
+        xlim=(100, 400),
+        ylim=(100, 400),
+        distance=100 * u.pc,  # type: ignore
+    )
