@@ -103,7 +103,7 @@ def _plot_image_helper(
 
 
 @image_comparison(
-    baseline_images=["example_plot_TdV"],
+    baseline_images=["example_plot_TdV_NoLimits"],
     remove_text=True,
     extensions=["png"],
     style="mpl20",
@@ -120,7 +120,7 @@ def test_plot_TdV() -> None:
 
 
 @image_comparison(
-    baseline_images=["example_plot_TdV_NoLimits"],
+    baseline_images=["example_plot_TdV_WithLimits"],
     remove_text=True,
     extensions=["png"],
     style="mpl20",
