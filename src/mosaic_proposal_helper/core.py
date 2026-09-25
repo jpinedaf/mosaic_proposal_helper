@@ -136,7 +136,7 @@ def compute_pointings(
     pb (float): Primary beam size in degrees.
 
     Returns:
-    list: A list of tuples containing the pointings (RA, Dec) for the given FOV.
+    list: A list of SkyCoord objects, containing the pointings (RA, Dec) for the given FOV.
     """
     ra_rad = np.radians(ra)
     dec_rad = np.radians(dec)

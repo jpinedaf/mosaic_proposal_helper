@@ -106,7 +106,7 @@ def plot_circle(
 
 def plot_circle_wcs(
     ax: Axes,
-    center: tuple[Quantity, Quantity],
+    center: tuple[Quantity[u.deg], Quantity[u.deg]],  # type: ignore[reportUnknownMemberType]
     radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
     edgecolor: str = "white",
     ls: str = ":",
