@@ -123,7 +123,7 @@ def compute_pointings(
     height: Quantity[u.degree],
     pb: Quantity[u.degree],
     pa: Quantity[u.degree] = 0 * u.degree,
-) -> List[Tuple[Quantity[u.deg], Quantity[u.deg]]]:
+) -> List[SkyCoord]:
     """
     Compute the pointings for a given right ascension (RA), declination (Dec), and field of view (FOV).
 

@@ -106,7 +106,7 @@ def plot_circle(
 
 def plot_circle_wcs(
     ax: Axes,
-    center: tuple[float, float],
+    center: tuple[Quantity, Quantity],
     radius: Quantity[u.deg],  # type: ignore[reportUnknownMemberType]
     edgecolor: str = "white",
     ls: str = ":",
@@ -124,7 +124,6 @@ def plot_circle_wcs(
         **kwargs,
     )
     ax.add_patch(c0)
-    return
 
 
 def plot_TdV(
@@ -179,4 +178,3 @@ def plot_TdV(
     DEC.set_minor_frequency(5)
     RA.set_minor_frequency(5)
     _ = im
-    return
