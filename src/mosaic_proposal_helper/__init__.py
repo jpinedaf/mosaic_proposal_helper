@@ -21,6 +21,8 @@ __all__ = [
 try:
     from ._version import __version__
 except ImportError:  # pragma: no cover
-    __version__ = importlib.metadata.version(
-        "mosaic_proposal_helper"
-    )  # pragma: no cover
+    try:
+        __version__ = importlib.metadata.version("mosaic_proposal_helper")
+    except importlib.metadata.PackageNotFoundError:
+        # Fallback for uninstalled source checkouts without git / generated _version.py
+        __version__ = "0.3"
