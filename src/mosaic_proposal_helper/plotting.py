@@ -87,7 +87,6 @@ def plot_circle(
     axis_units: Quantity[u.arcsec] = u.arcsec,  # type: ignore[reportUnknownMemberType]
     **kwargs,
 ) -> None:
-    print(f"Plotting circle at {center} with radius {radius} in {axis_units}")
     theta = np.linspace(0, 2 * np.pi, 100)
     x = center[0] + radius.to_value(axis_units) * np.cos(theta)
     y = center[1] + radius.to_value(axis_units) * np.sin(theta)
